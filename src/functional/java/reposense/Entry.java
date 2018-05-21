@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import reposense.dataobject.RepoConfiguration;
 import reposense.frontend.CliArguments;
-import reposense.report.RepoInfoFileGenerator;
 import reposense.parser.CsvParser;
+import reposense.report.RepoInfoFileGenerator;
 import reposense.util.FileUtil;
 
 

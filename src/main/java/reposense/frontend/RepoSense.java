@@ -1,7 +1,6 @@
 package reposense.frontend;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import reposense.dataobject.RepoConfiguration;
