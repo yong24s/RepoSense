@@ -24,12 +24,12 @@ public class ContributionSummaryGenerator {
         System.out.println("Generating summary report...");
         Map<String, RepoContributionSummary> result = new HashMap<>();
         HashSet<Author> suspiciousAuthors = new HashSet<>(); //authors with bugs that I didnt catch
-        Date startDate = configs.get(0).getFromDate() == null ? getStartDate(repos) : configs.get(0).getFromDate();
+        Date startDate = configs.get(0).getSinceDate() == null ? getStartDate(repos) : configs.get(0).getSinceDate();
         for (RepoInfo repo : repos) {
             //if (repo.getCommits().isEmpty()) continue;
             RepoContributionSummary summary = new RepoContributionSummary(repo);
             summary.setFromDate(startDate);
-            summary.setToDate(configs.get(0).getToDate());
+            summary.setToDate(configs.get(0).getUntilDate());
             summary.setAuthorWeeklyIntervalContributions(
                     getAuthorIntervalContributions(repo, startDate, 7, suspiciousAuthors));
             summary.setAuthorDailyIntervalContributions(

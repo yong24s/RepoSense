@@ -51,8 +51,8 @@ public class CsvParser {
         if (!repoMap.containsKey(key)) {
             RepoConfiguration config = new RepoConfiguration(organization, repositoryName, branch);
 
-            config.setFromDate(sinceDate);
-            config.setToDate(untilDate);
+            config.setSinceDate(sinceDate);
+            config.setUntilDate(untilDate);
 
             repoMap.put(key, config);
         }
