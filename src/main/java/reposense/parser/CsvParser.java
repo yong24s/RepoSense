@@ -62,19 +62,14 @@ public class CsvParser {
      * Creates a RepoConfiguration object in the repoMap, if it does not exists.
      *
      * Parameters - organization, repositoryName and branch are used to create the key to access RepoMap.
-     *
-     * @throws UnsupportedOperationException, if this method is called before createRepoConfigInMapIfNotExists()
      */
     private RepoConfiguration getRepoConfigFromMap(final String organization, final String repositoryName,
-            final String branch) {
+            final String branch, final Date sinceDate, final Date untilDate) {
 
         final String key = String.format(REPO_CONFIG_MAP_KEY_FORMAT, organization, repositoryName, branch);
+        createRepoConfigInMapIfNotExists(organization, repositoryName, branch, sinceDate, untilDate);
 
-        if (repoMap.containsKey(key)) {
-            return repoMap.get(key);
-        }
-
-        throw new UnsupportedOperationException(MESSAGE_INCORRECT_USAGE);
+        return repoMap.get(key);
     }
 
     /**
@@ -100,9 +95,7 @@ public class CsvParser {
                     String repositoryName = elements[REPOSITORY_NAME_POSITION];
                     String branch = elements[BRANCH_POSITION];
 
-                    createRepoConfigInMapIfNotExists(organization, repositoryName, branch, sinceDate, untilDate);
-
-                    RepoConfiguration config = getRepoConfigFromMap(organization, repositoryName, branch);
+                    RepoConfiguration config = getRepoConfigFromMap(organization, repositoryName, branch, sinceDate, untilDate);
 
                     Author author = new Author(elements[GITHUB_ID_POSITION]);
                     config.getAuthorList().add(author);
