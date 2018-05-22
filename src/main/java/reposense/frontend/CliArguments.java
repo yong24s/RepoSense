@@ -52,10 +52,6 @@ public class CliArguments {
 
     /**
      * Alternative constructor for testing
-     *
-     * @param configFile
-     * @param sinceDate
-     * @param untilDate
      */
     public CliArguments(File configFile, Date sinceDate, Date untilDate) {
         this.configFile = configFile;
@@ -139,7 +135,7 @@ public class CliArguments {
     }
 
     /**
-     * Verifies input values are correct
+     * Verifies the correctness of input values
      *
      * @throws IllegalArgumentException If user-supplied values are invalid
      */
