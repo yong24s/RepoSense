@@ -20,8 +20,6 @@ public class CsvParser {
 
     private static final String MESSAGE_MALFORMED_CSV_FILE = "The supplied CSV file is malformed or corrupted.";
     private static final String MESSAGE_UNABLE_TO_READ_CSV_FILE = "Unable to read the supplied CSV file.";
-    private static final String MESSAGE_INCORRECT_USAGE = "Incorrect Usage: RepositoryConfiguration key does not exists."
-            + "You should use createRepoConfigInMapIfNotExists() to first.";
 
     private static final int SKIP_FIRST_LINE = 1;
 
@@ -95,7 +93,8 @@ public class CsvParser {
                     String repositoryName = elements[REPOSITORY_NAME_POSITION];
                     String branch = elements[BRANCH_POSITION];
 
-                    RepoConfiguration config = getRepoConfigFromMap(organization, repositoryName, branch, sinceDate, untilDate);
+                    RepoConfiguration config = getRepoConfigFromMap(organization, repositoryName, branch,
+                            sinceDate, untilDate);
 
                     Author author = new Author(elements[GITHUB_ID_POSITION]);
                     config.getAuthorList().add(author);
