@@ -38,7 +38,8 @@ public class Entry {
         c.set(2017, 10, 30);
         Date toDate = c.getTime();
 
-        CliArguments arguments = new CliArguments(configFile, fromDate, toDate);
+        String[] args = new String[]{"-config", configFile.getAbsolutePath(), "-since", "01/06/2017", "-until", "30/10/2017"};
+        CliArguments arguments = new CliArguments(args);
         CsvParser csvParser = new CsvParser();
 
         List<RepoConfiguration> configs = csvParser.parse(arguments);

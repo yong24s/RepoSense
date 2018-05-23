@@ -47,18 +47,7 @@ public class CliArguments {
         final HashMap<String, String> argumentMap = generateArgumentMap(args);
         checkAllMandatoryArgumentsPresent(argumentMap);
         setUserInputValuesToArgument(argumentMap);
-        verifyInputValues();
-    }
-
-    /**
-     * Alternative constructor for testing
-     */
-    public CliArguments(File configFile, Date sinceDate, Date untilDate) {
-        this.configFile = configFile;
-        this.sinceDate = Optional.of(sinceDate);
-        this.untilDate = Optional.of(untilDate);
-
-        verifyInputValues();
+        verifyDatesAreInCorrectRange();
     }
 
     /**
@@ -135,11 +124,11 @@ public class CliArguments {
     }
 
     /**
-     * Verifies the correctness of input values
+     * Verifies that {@code sinceDate} is earlier than {@code untilDate}
      *
      * @throws IllegalArgumentException If user-supplied values are invalid
      */
-    private void verifyInputValues() {
+    private void verifyDatesAreInCorrectRange() {
 
         // Checks sinceDate and untilDate if they are provided
         if (sinceDate.isPresent() && untilDate.isPresent()) {
