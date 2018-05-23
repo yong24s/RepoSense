@@ -22,7 +22,8 @@ public class CliArguments {
 
     private static final String MESSAGE_INVALID_INPUTS = "Failed to parse inputs arguments";
     private static final String MESSAGE_NO_CSV_FILE = "Failed due to missing CSV file";
-    private static final String MESSAGE_SINCE_DATE_LATER_THAN_UNTIL_DATE = "Since Date cannot be later than Until Date";
+    private static final String MESSAGE_SINCE_DATE_LATER_THAN_UNTIL_DATE =
+            "\"Since Date\" cannot be later than \"Until Date\"";
 
     private static final String DEFAULT_FILE_ARG = ".";
 

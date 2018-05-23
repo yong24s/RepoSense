@@ -34,102 +34,105 @@ public class CsvParser {
     /** String format of the key for RepoConfig HashMap */
     private static final String REPO_CONFIG_MAP_KEY_FORMAT = "%s|%s|%s";
 
-    private HashMap<String, RepoConfiguration> repoMap = new HashMap<String, RepoConfiguration>();
-
     /**
-     * Creates a RepoConfiguration object in repoMap, if it does not exists.
+     * Creates {@code RepoConfiguration} object in repoMap, if it does not exists.
      *
      * Parameters - organization, repositoryName and branch are used to create the key to access RepoMap.
      */
-    private void createRepoConfigInMapIfNotExists(final String organization, final String repositoryName,
-            final String branch, final Date sinceDate, final Date untilDate) {
+    private void createRepoConfigInMapIfNotExists(final HashMap<String, RepoConfiguration> repositoryMap,
+            final String organization, final String repositoryName, final String branch, final Date sinceDate,
+            final Date untilDate) {
+        final String key = createRepoConfigKey(organization, repositoryName, branch);
 
-        final String key = String.format(REPO_CONFIG_MAP_KEY_FORMAT, organization, repositoryName, branch);
-
-        if (!repoMap.containsKey(key)) {
+        if (!repositoryMap.containsKey(key)) {
             RepoConfiguration config = new RepoConfiguration(organization, repositoryName, branch);
 
             config.setSinceDate(sinceDate);
             config.setUntilDate(untilDate);
 
-            repoMap.put(key, config);
+            repositoryMap.put(key, config);
         }
     }
 
     /**
-     * Creates a RepoConfiguration object in the repoMap, if it does not exists.
+     * Returns a {@code RepoConfiguration} contained in repoMap
      *
      * Parameters - organization, repositoryName and branch are used to create the key to access RepoMap.
      */
-    private RepoConfiguration getRepoConfigFromMap(final String organization, final String repositoryName,
-            final String branch, final Date sinceDate, final Date untilDate) {
+    private RepoConfiguration getRepoConfigFromMap(final HashMap<String, RepoConfiguration> repositoryMap,
+            final String organization, final String repositoryName, final String branch,
+            final Date sinceDate, final Date untilDate) {
+        final String key = createRepoConfigKey(organization, repositoryName, branch);
+        createRepoConfigInMapIfNotExists(repositoryMap, organization, repositoryName, branch, sinceDate, untilDate);
 
-        final String key = String.format(REPO_CONFIG_MAP_KEY_FORMAT, organization, repositoryName, branch);
-        createRepoConfigInMapIfNotExists(organization, repositoryName, branch, sinceDate, untilDate);
+        return repositoryMap.get(key);
+    }
 
-        return repoMap.get(key);
+    private String createRepoConfigKey(String organization, String repositoryName, String branch) {
+        return String.format(REPO_CONFIG_MAP_KEY_FORMAT, organization, repositoryName, branch);
     }
 
     /**
      * Returns a list of RepoConfiguration, which are the inflated object a line of the csv file.
      *
-     * @throws IllegalArgumentException If parameter is null or user-supplied csv file fails to parse.
+     * @throws IOException If user-supplied csv file does not exists or is not readable.
      */
-    public List<RepoConfiguration> parse(CliArguments argument) throws IllegalArgumentException {
-
+    public List<RepoConfiguration> parse(CliArguments argument) throws IOException {
         assert (argument != null);
 
         final Date sinceDate = argument.getSinceDate().orElse(null);
         final Date untilDate = argument.getUntilDate().orElse(null);
         final Path path = argument.getConfigFile().toPath();
 
+        HashMap<String, RepoConfiguration> repositoryMap = new HashMap<String, RepoConfiguration>();
+
         try {
             // Skips first line, which is the header row
-            Files.lines(path).skip(SKIP_FIRST_LINE).forEach(line -> {
-                if (!line.isEmpty()) {
-                    String[] elements = line.split(Constants.CSV_SPLITTER);
-
-                    String organization = elements[ORGANIZATION_POSITION];
-                    String repositoryName = elements[REPOSITORY_NAME_POSITION];
-                    String branch = elements[BRANCH_POSITION];
-
-                    RepoConfiguration config = getRepoConfigFromMap(organization, repositoryName, branch,
-                            sinceDate, untilDate);
-
-                    Author author = new Author(elements[GITHUB_ID_POSITION]);
-                    config.getAuthorList().add(author);
-
-                    // Checks length of the elements array as trailing commas may be omitted for empty columns
-                    if (elements.length > DISPLAY_NAME_POSITION && !elements[DISPLAY_NAME_POSITION].isEmpty()) {
-                        //Not empty, take the supplied value as Display Name
-                        config.getAuthorDisplayNameMap().put(author, elements[DISPLAY_NAME_POSITION]);
-                    } else {
-                        //else, use GitHub Id as Display Name
-                        config.getAuthorDisplayNameMap().put(author, author.getGitId());
-                    }
-
-                    //Always use GitHub Id as an alias
-                    config.getAuthorAliasMap().put(elements[GITHUB_ID_POSITION], author);
-
-                    // Checks length of the elements array as trailing commas may be omitted for empty columns
-                    // If more alias are provided, use them as well
-                    if (elements.length > ALIAS_POSITION &&  !elements[ALIAS_POSITION].isEmpty()) {
-                        String[] aliases = elements[ALIAS_POSITION].split(Constants.AUTHOR_ALIAS_SPLITTER);
-
-                        for (String alias : aliases) {
-                            config.getAuthorAliasMap().put(alias, author);
-                        }
-                    }
-                }
-            });
+            Files.lines(path).skip(SKIP_FIRST_LINE).forEach(line ->
+                    processLine(repositoryMap, sinceDate, untilDate, line));
         } catch (IOException iex) {
-            throw new IllegalArgumentException(MESSAGE_UNABLE_TO_READ_CSV_FILE);
-        } catch (ArrayIndexOutOfBoundsException aex) {
-            throw new IllegalArgumentException(MESSAGE_MALFORMED_CSV_FILE);
+            throw new IOException(MESSAGE_UNABLE_TO_READ_CSV_FILE);
         }
 
-        // Converts HashMap to a List
-        List<RepoConfiguration> configs = new ArrayList<RepoConfiguration>(repoMap.values());
-        return configs;
+        return new ArrayList<RepoConfiguration>(repositoryMap.values());
+    }
+
+    private void processLine(HashMap<String, RepoConfiguration> repositoryMap,
+            Date sinceDate, Date untilDate, String line) {
+        if (!line.isEmpty()) {
+            String[] elements = line.split(Constants.CSV_SPLITTER);
+
+            String organization = elements[ORGANIZATION_POSITION];
+            String repositoryName = elements[REPOSITORY_NAME_POSITION];
+            String branch = elements[BRANCH_POSITION];
+
+            RepoConfiguration config = getRepoConfigFromMap(repositoryMap, organization, repositoryName, branch,
+                    sinceDate, untilDate);
+
+            Author author = new Author(elements[GITHUB_ID_POSITION]);
+            config.getAuthorList().add(author);
+
+            // Checks length of the elements array as trailing commas may be omitted for empty columns
+            if (elements.length > DISPLAY_NAME_POSITION && !elements[DISPLAY_NAME_POSITION].isEmpty()) {
+                //Not empty, take the supplied value as Display Name
+                config.getAuthorDisplayNameMap().put(author, elements[DISPLAY_NAME_POSITION]);
+            } else {
+                //else, use GitHub Id as Display Name
+                config.getAuthorDisplayNameMap().put(author, author.getGitId());
+            }
+
+            //Always use GitHub Id as an alias
+            config.getAuthorAliasMap().put(elements[GITHUB_ID_POSITION], author);
+
+            // Checks length of the elements array as trailing commas may be omitted for empty columns
+            // If more alias are provided, use them as well
+            if (elements.length > ALIAS_POSITION &&  !elements[ALIAS_POSITION].isEmpty()) {
+                String[] aliases = elements[ALIAS_POSITION].split(Constants.AUTHOR_ALIAS_SPLITTER);
+
+                for (String alias : aliases) {
+                    config.getAuthorAliasMap().put(alias, author);
+                }
+            }
+        }
     }
 }

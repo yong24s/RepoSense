@@ -3,8 +3,6 @@ package reposense;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -23,22 +21,22 @@ public class Entry {
 
     @Test
     public void test() {
-        generateReport();
-        String actualRelativeDir = getRelativeDir();
-        File actualFiles = new File(getClass().getClassLoader().getResource("expected").getFile());
-        verifyAllJson(actualFiles, actualRelativeDir);
-        FileUtil.deleteDirectory(FT_TEMP_DIR);
+        try {
+            generateReport();
+            String actualRelativeDir = getRelativeDir();
+            File actualFiles = new File(getClass().getClassLoader().getResource("expected").getFile());
+            verifyAllJson(actualFiles, actualRelativeDir);
+            FileUtil.deleteDirectory(FT_TEMP_DIR);
+        } catch (IOException iex) {
+            iex.printStackTrace();
+        }
     }
 
-    private void generateReport() {
+    private void generateReport() throws IOException {
         File configFile = new File(getClass().getClassLoader().getResource("sample_full.csv").getFile());
-        Calendar c = Calendar.getInstance();
-        c.set(2017, 6, 1);
-        Date fromDate = c.getTime();
-        c.set(2017, 10, 30);
-        Date toDate = c.getTime();
+        String[] args = new String[]{"-config", configFile.getAbsolutePath(),
+                "-since", "01/07/2017", "-until", "30/11/2017"};
 
-        String[] args = new String[]{"-config", configFile.getAbsolutePath(), "-since", "01/06/2017", "-until", "30/10/2017"};
         CliArguments arguments = new CliArguments(args);
         CsvParser csvParser = new CsvParser();
 
