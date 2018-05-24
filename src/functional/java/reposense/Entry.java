@@ -35,7 +35,7 @@ public class Entry {
     private void generateReport() throws IOException {
         File configFile = new File(getClass().getClassLoader().getResource("sample_full.csv").getFile());
         String[] args = new String[]{"-config", configFile.getAbsolutePath(),
-                "-since", "01/07/2017", "-until", "30/11/2017"};
+            "-since", "01/07/2017", "-until", "30/11/2017"};
 
         CliArguments arguments = new CliArguments(args);
         CsvParser csvParser = new CsvParser();

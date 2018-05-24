@@ -130,12 +130,8 @@ public class CliArguments {
      * @throws IllegalArgumentException If user-supplied values are invalid
      */
     private void verifyDatesAreInCorrectRange() {
-
-        // Checks sinceDate and untilDate if they are provided
-        if (sinceDate.isPresent() && untilDate.isPresent()) {
-            if (sinceDate.get().getTime() > untilDate.get().getTime()) {
-                throw new IllegalArgumentException(MESSAGE_SINCE_DATE_LATER_THAN_UNTIL_DATE);
-            }
+        if (sinceDate.isPresent() && untilDate.isPresent() && sinceDate.get().getTime() > untilDate.get().getTime()) {
+            throw new IllegalArgumentException(MESSAGE_SINCE_DATE_LATER_THAN_UNTIL_DATE);
         }
     }
 
