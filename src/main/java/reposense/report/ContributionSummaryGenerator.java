@@ -24,7 +24,7 @@ public class ContributionSummaryGenerator {
         System.out.println("Generating summary report...");
         Map<String, RepoContributionSummary> result = new HashMap<>();
         HashSet<Author> suspiciousAuthors = new HashSet<>(); //authors with bugs that I didnt catch
-        Date sinceDate = configs.get(0).getSinceDate() == null ? getStartDate(repos) : configs.get(0).getSinceDate();
+        Date sinceDate = configs.get(0).getSinceDate() == null ? getSinceDate(repos) : configs.get(0).getSinceDate();
         for (RepoInfo repo : repos) {
             //if (repo.getCommits().isEmpty()) continue;
             RepoContributionSummary summary = new RepoContributionSummary(repo);
@@ -129,7 +129,7 @@ public class ContributionSummaryGenerator {
         return c.getTime();
     }
 
-    private static Date getStartDate(List<RepoInfo> repos) {
+    private static Date getSinceDate(List<RepoInfo> repos) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2050);
         Date min = cal.getTime();

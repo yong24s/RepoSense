@@ -9,11 +9,11 @@ public class AuthorIntervalContribution {
     private Date sinceDate;
     private Date untilDate;
 
-    public AuthorIntervalContribution(int insertions, int deletions, Date fromDate, Date toDate) {
+    public AuthorIntervalContribution(int insertions, int deletions, Date sinceDate, Date untilDate) {
         this.insertions = insertions;
         this.deletions = deletions;
-        this.sinceDate = fromDate;
-        this.untilDate = toDate;
+        this.sinceDate = sinceDate;
+        this.untilDate = untilDate;
     }
 
     public Date getSinceDate() {

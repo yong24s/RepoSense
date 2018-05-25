@@ -20,7 +20,8 @@ import reposense.util.Constants;
  */
 public class CsvParser {
     private static final String MESSAGE_UNABLE_TO_READ_CSV_FILE = "Unable to read the supplied CSV file.";
-    private static final String MESSAGE_MALFORMED_LINE_FORMAT = "Warning! line {} is malformed.\nContents: {}";
+    private static final String MESSAGE_MALFORMED_LINE_FORMAT = "Warning! line %s is malformed.\n"
+            + "Contents: %s";
 
     private static final int SKIP_FIRST_LINE = 1;
 
@@ -36,7 +37,7 @@ public class CsvParser {
     private static final String REPO_CONFIG_MAP_KEY_FORMAT = "%s|%s|%s";
 
     /**
-     * Creates {@code RepoConfiguration} object in repositoryMap, if it does not exists.
+     * Creates {@code RepoConfiguration} object in {@code repositoryMap}, if it does not exists.
      *
      * Parameters - organization, repositoryName and branch are used to create the key to access RepoMap.
      */
@@ -56,7 +57,7 @@ public class CsvParser {
     }
 
     /**
-     * Returns a {@code RepoConfiguration} contained in repositoryMap
+     * Returns a {@code RepoConfiguration} contained in {@code repositoryMap}
      *
      * Parameters - organization, repositoryName and branch are used to create the key to access repositoryMap.
      */
@@ -74,7 +75,7 @@ public class CsvParser {
     }
 
     /**
-     * Returns a list of RepoConfiguration, which are the inflated object a line of the csv file.
+     * Returns a list of {@code RepoConfiguration}, which are the inflated object a line of the csv file.
      *
      * @throws IOException If user-supplied csv file does not exists or is not readable.
      */
