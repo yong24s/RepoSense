@@ -24,16 +24,16 @@ public class ContributionSummaryGenerator {
         System.out.println("Generating summary report...");
         Map<String, RepoContributionSummary> result = new HashMap<>();
         HashSet<Author> suspiciousAuthors = new HashSet<>(); //authors with bugs that I didnt catch
-        Date startDate = configs.get(0).getFromDate() == null ? getStartDate(repos) : configs.get(0).getFromDate();
+        Date sinceDate = configs.get(0).getSinceDate() == null ? getSinceDate(repos) : configs.get(0).getSinceDate();
         for (RepoInfo repo : repos) {
             //if (repo.getCommits().isEmpty()) continue;
             RepoContributionSummary summary = new RepoContributionSummary(repo);
-            summary.setFromDate(startDate);
-            summary.setToDate(configs.get(0).getToDate());
+            summary.setSinceDate(sinceDate);
+            summary.setUntilDate(configs.get(0).getUntilDate());
             summary.setAuthorWeeklyIntervalContributions(
-                    getAuthorIntervalContributions(repo, startDate, 7, suspiciousAuthors));
+                    getAuthorIntervalContributions(repo, sinceDate, 7, suspiciousAuthors));
             summary.setAuthorDailyIntervalContributions(
-                    getAuthorIntervalContributions(repo, startDate, 1, suspiciousAuthors));
+                    getAuthorIntervalContributions(repo, sinceDate, 1, suspiciousAuthors));
             summary.setAuthorFinalContributionMap(repo.getAuthorContributionMap());
             summary.setAuthorContributionVariance(
                     calcAuthorContributionVariance(summary.getAuthorDailyIntervalContributions()));
@@ -129,7 +129,7 @@ public class ContributionSummaryGenerator {
         return c.getTime();
     }
 
-    private static Date getStartDate(List<RepoInfo> repos) {
+    private static Date getSinceDate(List<RepoInfo> repos) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2050);
         Date min = cal.getTime();

@@ -21,8 +21,8 @@ public class RepoConfiguration {
     private TreeMap<String, Author> authorAliasMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private Map<Author, String> authorDisplayNameMap = new HashMap<>();
     private boolean annotationOverwrite = true;
-    private Date fromDate;
-    private Date toDate;
+    private Date sinceDate;
+    private Date untilDate;
 
 
     public RepoConfiguration(String organization, String repoName, String branch) {
@@ -115,19 +115,19 @@ public class RepoConfiguration {
         this.authorAliasMap = authorAliasMap;
     }
 
-    public Date getFromDate() {
-        return fromDate;
+    public Date getSinceDate() {
+        return sinceDate;
     }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
+    public void setSinceDate(Date sinceDate) {
+        this.sinceDate = sinceDate;
     }
 
-    public Date getToDate() {
-        return toDate;
+    public Date getUntilDate() {
+        return untilDate;
     }
 
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
+    public void setUntilDate(Date untilDate) {
+        this.untilDate = untilDate;
     }
 }

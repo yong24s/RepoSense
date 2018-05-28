@@ -12,8 +12,8 @@ public class RepoContributionSummary {
     private String organization;
     private String branch;
     private String displayName;
-    private Date fromDate;
-    private Date toDate;
+    private Date sinceDate;
+    private Date untilDate;
     private Map<Author, List<AuthorIntervalContribution>> authorWeeklyIntervalContributions = new HashMap<>();
     private Map<Author, List<AuthorIntervalContribution>> authorDailyIntervalContributions = new HashMap<>();
     private Map<Author, Integer> authorFinalContributionMap = new HashMap<>();
@@ -101,19 +101,19 @@ public class RepoContributionSummary {
         this.authorContributionVariance = authorContributionVariance;
     }
 
-    public Date getFromDate() {
-        return fromDate;
+    public Date getSinceDate() {
+        return sinceDate;
     }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
+    public void setSinceDate(Date sinceDate) {
+        this.sinceDate = sinceDate;
     }
 
-    public Date getToDate() {
-        return toDate;
+    public Date getUntilDate() {
+        return untilDate;
     }
 
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
+    public void setUntilDate(Date untilDate) {
+        this.untilDate = untilDate;
     }
 }
