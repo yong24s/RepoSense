@@ -9,26 +9,26 @@ import java.util.TreeMap;
 
 import reposense.util.FileUtil;
 
-
 public class RepoConfiguration {
-    private boolean needCheckStyle = false;
-    private int commitNum = 1;
     private String organization;
     private String repoName;
     private String branch;
-    private List<String> ignoreDirectoryList = new ArrayList<>();
-    private List<Author> authorList = new ArrayList<>();
-    private TreeMap<String, Author> authorAliasMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private Map<Author, String> authorDisplayNameMap = new HashMap<>();
-    private boolean annotationOverwrite = true;
-    private Date fromDate;
-    private Date toDate;
-
+    private String displayName;
+    private transient boolean needCheckStyle = false;
+    private transient int commitNum = 1;
+    private transient List<String> ignoreDirectoryList = new ArrayList<>();
+    private transient List<Author> authorList = new ArrayList<>();
+    private transient TreeMap<String, Author> authorAliasMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private transient Map<Author, String> authorDisplayNameMap = new HashMap<>();
+    private transient boolean annotationOverwrite = true;
+    private Date sinceDate;
+    private Date untilDate;
 
     public RepoConfiguration(String organization, String repoName, String branch) {
         this.organization = organization;
         this.repoName = repoName;
         this.branch = branch;
+        this.displayName = organization + "_" + repoName;
     }
 
     public Map<Author, String> getAuthorDisplayNameMap() {
@@ -115,19 +115,23 @@ public class RepoConfiguration {
         this.authorAliasMap = authorAliasMap;
     }
 
-    public Date getFromDate() {
-        return fromDate;
+    public Date getSinceDate() {
+        return sinceDate;
     }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
+    public void setSinceDate(Date sinceDate) {
+        this.sinceDate = sinceDate;
     }
 
-    public Date getToDate() {
-        return toDate;
+    public Date getUntilDate() {
+        return untilDate;
     }
 
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
+    public void setUntilDate(Date untilDate) {
+        this.untilDate = untilDate;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 }

@@ -2,18 +2,17 @@ package reposense;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import reposense.dataobject.RepoConfiguration;
+import reposense.frontend.CliArguments;
+import reposense.parser.CsvParser;
 import reposense.report.RepoInfoFileGenerator;
-import reposense.system.CsvConfigurationBuilder;
 import reposense.util.FileUtil;
+import reposense.util.TestUtil;
 
 
 public class Entry {
@@ -22,21 +21,26 @@ public class Entry {
 
     @Test
     public void test() {
-        generateReport();
-        String actualRelativeDir = getRelativeDir();
-        File actualFiles = new File(getClass().getClassLoader().getResource("expected").getFile());
-        verifyAllJson(actualFiles, actualRelativeDir);
-        FileUtil.deleteDirectory(FT_TEMP_DIR);
+        try {
+            generateReport();
+            String actualRelativeDir = getRelativeDir();
+            File actualFiles = new File(getClass().getClassLoader().getResource("expected").getFile());
+            verifyAllJson(actualFiles, actualRelativeDir);
+            FileUtil.deleteDirectory(FT_TEMP_DIR);
+        } catch (IOException iex) {
+            iex.printStackTrace();
+        }
     }
 
-    private void generateReport() {
+    private void generateReport() throws IOException {
         File configFile = new File(getClass().getClassLoader().getResource("sample_full.csv").getFile());
-        Calendar c = Calendar.getInstance();
-        c.set(2017, 6, 1);
-        Date fromDate = c.getTime();
-        c.set(2017, 10, 30);
-        Date toDate = c.getTime();
-        List<RepoConfiguration> configs = CsvConfigurationBuilder.buildConfigs(configFile, fromDate, toDate);
+        String[] args = new String[]{"-config", configFile.getAbsolutePath(),
+            "-since", "01/07/2017", "-until", "30/11/2017"};
+
+        CliArguments arguments = new CliArguments(args);
+        CsvParser csvParser = new CsvParser();
+
+        List<RepoConfiguration> configs = csvParser.parse(arguments);
         RepoInfoFileGenerator.generateReposReport(configs, FT_TEMP_DIR);
     }
 
@@ -45,7 +49,7 @@ public class Entry {
             if (file.isDirectory()) {
                 verifyAllJson(file, actualRelative);
             } else {
-                if (!file.getName().endsWith(".js")) {
+                if (!file.getName().endsWith(".json")) {
                     continue;
                 }
                 String relativeDirectory = file.getAbsolutePath().split(EXPECTED_FOLDER)[1];
@@ -55,23 +59,14 @@ public class Entry {
     }
 
     private void assertJson(File expectedJson, String expectedPosition, String actualRelative) {
-        File actual = new File(actualRelative + expectedPosition);
-        Assert.assertTrue(actual.exists());
-        verifyContent(expectedJson, actual);
-    }
-
-    private void verifyContent(File expected, File actual) {
-        String expectedContent = "";
-        String actualContent = "";
+        File actualJson = new File(actualRelative + expectedPosition);
+        Assert.assertTrue(actualJson.exists());
         try {
-            expectedContent = new String(Files.readAllBytes(expected.toPath()));
-            actualContent = new String(Files.readAllBytes(actual.toPath()));
+            Assert.assertTrue(TestUtil.compareFileContents(expectedJson, actualJson));
         } catch (IOException e) {
-            Assert.fail();
+            Assert.fail(e.getMessage());
         }
-        Assert.assertEquals(expectedContent, actualContent);
     }
-
     private String getRelativeDir() {
         for (File file : (new File(FT_TEMP_DIR)).listFiles()) {
             if (file.getName().contains("DS_Store")) {

@@ -5,22 +5,30 @@ vueMethods = {
     updateMaxDate: function(date) {
         this.maxDate = date;
     },
-    rangeFilter: function(contributions, minDate, maxDate) {
+    rangeFilter: function(contributions, intervalType, minDate, maxDate) {
         var resultContribution = [];
         var minDateParsed = Date.parse(minDate);
         var maxDateParsed = Date.parse(maxDate);
+        var startingDate = Date.parse(contributions[0]["fromDate"]);
+        var paddingCount = getIntervalCount(intervalType, minDate, startingDate);
+        if(minDateParsed < startingDate){
+            for(var i=0; i<paddingCount; i++){
+                resultContribution.push({ insertions:0 });
+            }
+        }
         for (contribution of contributions) {
-            var currentFromDate = Date.parse(contribution["fromDate"]);
-            var currentToDate = Date.parse(contribution["toDate"]);
-            if (minDateParsed.compareTo(currentFromDate) <= 0 && maxDateParsed.compareTo(currentToDate) >= 0) {
+            var currentSinceDate = Date.parse(contribution["sinceDate"]);
+            var currentUntilDate = Date.parse(contribution["untilDate"]);
+            if (minDateParsed.compareTo(currentSinceDate) <= 0 && maxDateParsed.compareTo(currentUntilDate) >= 0) {
                 resultContribution.push(contribution);
             }
         }
+
         return resultContribution;
     },
     getSliceStyle: function(index, value, intervalType, minDate, maxDate) {
         var sliceScaleLimit = sliceScaleLimitMap[intervalType];
-        var spacing = 93 / getIntervalCount(intervalType, minDate, maxDate);
+        var spacing = 100 / getIntervalCount(intervalType, minDate, maxDate);
         var contribution = value['insertions'];
         var width;
         if (contribution == 0) {
@@ -44,9 +52,9 @@ vueMethods = {
     },
     getSliceTitle: function(value, intervalType) {
         if (intervalType == "authorDailyIntervalContributions"){
-            return "contribution on " + value["fromDate"] + ": " + value['insertions'] + " lines";
+            return "contribution on " + value["sinceDate"] + ": " + value['insertions'] + " lines";
         } else{
-            return "contribution from " + value["fromDate"] + " to " + value["toDate"] + ": " + value['insertions'] + " lines";
+            return "contribution from " + value["sinceDate"] + " to " + value["untilDate"] + ": " + value['insertions'] + " lines";
         }
     },
     getSliceGithubLink: function(timeSlice, authorRepo) {
@@ -54,7 +62,7 @@ vueMethods = {
             authorRepo.organization + "/" + authorRepo.repo +
             "/commits/" + authorRepo["branch"] +
             "?author=" + authorRepo["author"] + "&since=" +
-            timeSlice["fromDate"] + "&until=" + timeSlice["toDate"];
+            timeSlice["sinceDate"] + "&until=" + timeSlice["untilDate"];
         return "openInNewTab('" + url + "')";
     },
     generateBookmark : function(searchTerm,sortElement,sortOrder,isGroupByRepo,intervalType) {
@@ -78,7 +86,7 @@ vueMethods = {
                 authorRepo['author'] = author;
                 authorRepo['authorDisplayName'] = summary[repo]['authorDisplayNameMap'][author];
                 authorRepo['displayName'] = summary[repo]['displayName'];
-                authorRepo['repo'] = summary[repo]['repo'];
+                authorRepo['repo'] = summary[repo]['repoName'];
                 authorRepo['branch'] = summary[repo]['branch'];
                 authorRepo['organization'] = summary[repo]['organization'];
                 authorRepo['authorDailyIntervalContributions'] = summary[repo]['authorDailyIntervalContributions'][author];
