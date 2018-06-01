@@ -1,12 +1,12 @@
 package reposense.frontend;
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Date;
 import java.util.List;
 
 import reposense.dataobject.RepoConfiguration;
+import reposense.parser.CsvParser;
 import reposense.report.RepoInfoFileGenerator;
-import reposense.system.CsvConfigurationBuilder;
 
 public class RepoSense {
 
@@ -17,17 +17,15 @@ public class RepoSense {
 
         try {
             CliArguments cliArguments = new CliArguments(args);
-
-            Path configFile = cliArguments.getConfigFilePath();
-            Path targetFile = cliArguments.getTargetFilePath();
-            Date fromDate = cliArguments.getSinceDate().orElse(null);
-            Date toDate = cliArguments.getUntilDate().orElse(null);
-
-            List<RepoConfiguration> configs = CsvConfigurationBuilder.buildConfigs(configFile, fromDate, toDate);
-            RepoInfoFileGenerator.generateReposReport(configs, targetFile.toAbsolutePath().toString());
-        } catch (IllegalArgumentException ex) {
-            System.out.print(ex.getMessage());
+            Path targetFilePath = cliArguments.getTargetFilePath();
+            CsvParser csvParser = new CsvParser();
+            List<RepoConfiguration> configs = csvParser.parse(cliArguments);
+            RepoInfoFileGenerator.generateReposReport(configs, targetFilePath.toAbsolutePath().toString());
+        } catch (IllegalArgumentException iae) {
+            System.out.print(iae.getMessage());
             showHelpMessage();
+        } catch (IOException ioe) {
+            System.out.print(ioe.getMessage());
         }
     }
 

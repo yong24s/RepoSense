@@ -5,8 +5,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,11 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import reposense.dataobject.RepoConfiguration;
+import reposense.frontend.CliArguments;
+import reposense.parser.CsvParser;
 import reposense.report.RepoInfoFileGenerator;
-import reposense.system.CsvConfigurationBuilder;
 import reposense.util.FileUtil;
 import reposense.util.TestUtil;
-
 
 public class Entry {
     private static final String FT_TEMP_DIR = "ft_temp";
@@ -39,14 +37,15 @@ public class Entry {
         FileUtil.deleteDirectory(FT_TEMP_DIR);
     }
 
-    private String generateReport() throws URISyntaxException {
+    private String generateReport() throws URISyntaxException, IOException {
         Path configFilePath = Paths.get(getClass().getClassLoader().getResource("sample_full.csv").toURI());
-        Calendar c = Calendar.getInstance();
-        c.set(2017, Calendar.JUNE, 1);
-        Date fromDate = c.getTime();
-        c.set(2017, Calendar.OCTOBER, 30);
-        Date toDate = c.getTime();
-        List<RepoConfiguration> configs = CsvConfigurationBuilder.buildConfigs(configFilePath, fromDate, toDate);
+        String input = String.format("-config %s -since 01/07/2017 -until 30/11/2017", configFilePath);
+        String[] args = input.split(" ");
+
+        CliArguments arguments = new CliArguments(args);
+        CsvParser csvParser = new CsvParser();
+
+        List<RepoConfiguration> configs = csvParser.parse(arguments);
         return RepoInfoFileGenerator.generateReposReport(configs, FT_TEMP_DIR);
     }
 
@@ -68,7 +67,6 @@ public class Entry {
 
     private void assertJson(Path expectedJson, String expectedPosition, String actualRelative) {
         Path actualJson = Paths.get(actualRelative, expectedPosition);
-        System.out.println(actualRelative);
         Assert.assertTrue(Files.exists(actualJson));
         try {
             Assert.assertTrue(TestUtil.compareFileContents(expectedJson, actualJson));
