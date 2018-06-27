@@ -12,8 +12,8 @@ import net.sourceforge.argparse4j.impl.action.HelpArgumentAction;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import reposense.exception.ParseException;
-import reposense.frontend.CliArguments;
+import reposense.model.CliArguments;
+import reposense.util.Constants;
 
 
 /**
@@ -25,6 +25,10 @@ public class ArgsParser {
             "RepoSense is a contribution analysis tool for Git repositories.";
     private static final String MESSAGE_SINCE_DATE_LATER_THAN_UNTIL_DATE =
             "\"Since Date\" cannot be later than \"Until Date\"";
+
+    private static String generateDefaultReportName() {
+        return Constants.DEFAULT_REPORT_NAME_FORMAT.format(new Date());
+    }
 
     private static ArgumentParser getArgumentParser() {
         ArgumentParser parser = ArgumentParsers
@@ -46,9 +50,9 @@ public class ArgsParser {
         parser.addArgument("-output")
                 .metavar("PATH")
                 .type(Arguments.fileType().verifyExists().verifyIsDirectory().verifyCanWrite())
-                .setDefault(new File("."))
-                .help("The path to the dashboard generated. "
-                        + "If not provided, it will be generated in the current directory.");
+                .setDefault(new File(generateDefaultReportName()))
+                .help("The directory to output the generated dashboard. "
+                        + "If not provided, a folder with timestamp will be created in the current working directory.");
 
         parser.addArgument("-since")
                 .metavar("dd/MM/yyyy")
@@ -67,6 +71,7 @@ public class ArgsParser {
 
     /**
      * Parses the given string arguments to a {@code CliArguments} object.
+     *
      * @throws ParseException if the given string arguments fails to parse to a {@code CliArguments} object.
      */
     public static CliArguments parse(String[] args) throws ParseException {
@@ -91,6 +96,7 @@ public class ArgsParser {
 
     /**
      * Verifies that {@code sinceDate} is earlier than {@code untilDate}.
+     *
      * @throws ParseException if {@code sinceDate} supplied is later than {@code untilDate}.
      */
     private static void verifyDatesRangeIsCorrect(Optional<Date> sinceDate, Optional<Date> untilDate)
