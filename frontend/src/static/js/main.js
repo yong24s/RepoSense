@@ -64,14 +64,29 @@ window.deregisterMouseMove = () => {
   window.$('app-wrapper').style['user-select'] = 'auto';
 };
 
+const hljsWorker = window.threads.spawn(function (code) {
+  return new Promise(resolve => {
+    importScripts('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js');
+    const result = self.hljs.highlightAuto(code);
+    resolve(result.value);
+  })
+});
+
+
 /* global Vue hljs */
 Vue.directive('hljs', {
   inserted(ele, binding) {
-    const element = ele;
-    const fileExtension = binding.value.split('.').pop();
+      const element = ele;
+      const fileExtension = binding.value.split('.').pop();
+      element.className = fileExtension;
 
-    element.className = fileExtension;
-    hljs.highlightBlock(element);
+      hljsWorker
+        .send(element.textContent)
+        .on('message', function(response) {
+          // console.log(response)
+          element.innerHTML = response;
+          // hljsWorker.kill();
+        });
   },
 });
 
