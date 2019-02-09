@@ -2,7 +2,8 @@ language: java
 
 matrix:
   include:
-    - os: linux
+    - name: "Linux JDK 9"
+      os: linux
       jdk: oraclejdk9
       addons:
         apt:
@@ -14,14 +15,16 @@ matrix:
         - ./config/travis/run-checks.sh
         - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
-    - os: osx
+    - name: "macOSX JDK 9"
+      os: osx
       install:
         - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
         - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
-    - os: linux
+    - name: "Frontend tests"
+      os: linux
       dist: xenial
       addons:
         chrome: stable
@@ -36,9 +39,11 @@ matrix:
       script:
         - ./gradlew zipreport
         - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git"
-        - cd reposense-report && python -m SimpleHTTPServer 9000
+        - cd reposense-report
+        - python -m SimpleHTTPServer 9000 &
         - sleep 3
         - cd ./frontend/tests && npm run-script tests
+        - pkill -f python
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
