@@ -15,6 +15,16 @@ matrix:
         - ./config/travis/run-checks.sh
         - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
+          - $TRAVIS_BUILD_DIR/frontend/node_modules
+
     - name: "macOSX JDK 9"
       os: osx
       install:
@@ -23,6 +33,16 @@ matrix:
         - ./config/travis/run-checks.sh
         - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
+          - $TRAVIS_BUILD_DIR/frontend/node_modules
+
     - name: "Frontend Tests"
       os: linux
       dist: xenial
@@ -44,15 +64,13 @@ matrix:
         - cd ..
         - sleep 3
         - cd ./frontend/tests && npm run-script tests
-        - pkill -f python
-
-before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-    - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
-    - $TRAVIS_BUILD_DIR/frontend/node_modules
+        - pkill -f SimpleHTTPServer
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
+          - $TRAVIS_BUILD_DIR/frontend/node_modules
