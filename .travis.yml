@@ -34,7 +34,8 @@ matrix:
       install:
         - cd ./frontend/tests; npm install; cd ../../
       script:
-        - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git -view" > /dev/null 2>&1 & disown
+        - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git"
+        - cd reposense-report && python -m SimpleHTTPServer 9000
         - sleep 3
         - cd ./frontend/tests && npm run-script tests
 
