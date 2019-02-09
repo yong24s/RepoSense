@@ -34,7 +34,7 @@ matrix:
       install:
         - cd ./frontend/tests; npm install; cd ../../
       script:
-        - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git -view" &
+        - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git -view" > /dev/null 2>&1 & disown
         - sleep 3
         - cd ./frontend/tests && npm run-script tests
 
