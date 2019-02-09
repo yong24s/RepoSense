@@ -4,18 +4,23 @@ matrix:
   include:
     - os: linux
       jdk: oraclejdk9
+      script:
+        - ./config/travis/run-checks.sh
+        - npm run lint frontend/src/**/*.js
+        - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
     - os: osx
+      script:
+        - ./config/travis/run-checks.sh
+        - npm run lint frontend/src/**/*.js
+        - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
     - os: linux
       dist: xenial
       env: FRONTEND_TEST=true
       addons:
         chrome: stable
-
-script:
-  - ./config/travis/run-checks.sh
-  - npm run lint frontend/src/**/*.js
-  - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
-  - if [[ "$FRONTEND_TEST"]]; then cd ./frontend/tests; npm run-script tests; fi
+      script: 
+        - cd ./frontend/tests; npm install; cd ..
+        - cd ./frontend/tests && npm run-script tests
 
 addons:
   apt:
@@ -24,7 +29,6 @@ addons:
 
 before_install:
   - cd ./frontend; npm install --only=dev; cd ..
-  - if [[ "$FRONTEND_TEST"]]; then cd ./frontend/tests; npm install; cd ..; fi
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
