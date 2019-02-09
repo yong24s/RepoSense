@@ -22,12 +22,9 @@ matrix:
         - (cd ./frontend && npm install --only=dev)
       script:
         - npm run lint ./frontend/src/**/*.js
-      cache:
-        - npm: true
-        - directories:
-          - $TRAVIS_BUILD_DIR/frontend/node_modules/
 
     - name: "Frontend Tests"
+      language: generic
       os: linux
       dist: xenial
       addons:
@@ -45,15 +42,13 @@ matrix:
         - sleep 3
         - (cd ./frontend/tests && npm run-script tests)
         - pkill -f SimpleHTTPServer
-      cache:
-        - npm: true
-        - directories:
-          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules/
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $TRAVIS_BUILD_DIR/frontend/tests/node_modules/
