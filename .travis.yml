@@ -8,14 +8,14 @@ matrix:
         apt:
           packages:
             - oracle-java9-installer
-      before_install:
+      install:
         - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
         - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
     - os: osx
-      before_install:
+      install:
         - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
@@ -25,13 +25,13 @@ matrix:
       dist: xenial
       addons:
         chrome: stable
+      services:
+        - xvfb
       before_install:
         # https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-travis-ci
-        # https://docs.travis-ci.com/user/gui-and-headless-browsers/#starting-a-web-server
-        - "sysctl kernel.unprivileged_userns_clone=1"
-        - "export DISPLAY=:99.0"
-        - "sh -e /etc/init.d/xvfb start"
+        - sysctl kernel.unprivileged_userns_clone=1
         - sleep 3
+      install:
         - cd ./frontend/tests; npm install; cd ../../
       script:
         - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git -view" &
