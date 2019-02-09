@@ -1,0 +1,12 @@
+{
+  "name": "RepoSense-frontend-tests",
+  "scripts": {
+    "tests": "mocha testdriver.js --timeout 30000 --recursive testfiles"
+  },
+  "dependencies": {
+    "chai": "4.2.0",
+    "lodash": "4.17.11",
+    "mocha": "5.2.0",
+    "puppeteer": "1.12.2"
+  }
+}
