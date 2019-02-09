@@ -21,10 +21,10 @@ matrix:
       install:
         - (cd ./frontend && npm install --only=dev)
       script:
-        - npm run lint frontend/src/**/*.js
+        - npm run lint ./frontend/src/**/*.js
       cache:
         directories:
-          - $TRAVIS_BUILD_DIR/frontend/node_modules
+          - $TRAVIS_BUILD_DIR/frontend/node_modules/
 
     - name: "Frontend Tests"
       os: linux
@@ -36,21 +36,17 @@ matrix:
       before_install:
         # https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-on-travis-ci
         - sysctl kernel.unprivileged_userns_clone=1
-        - sleep 3
       install:
         - (cd ./frontend/tests && npm install)
       script:
-        - ./gradlew zipreport
-        - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git"
-        - cd reposense-report
-        - python -m SimpleHTTPServer 9000 > /dev/null 2>&1 & disown
-        - cd ..
+        - ./gradlew zipreport && ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git"
+        - (cd reposense-report && python -m SimpleHTTPServer 9000 > /dev/null 2>&1 & disown)
         - sleep 3
-        - cd ./frontend/tests && npm run-script tests
+        - (cd ./frontend/tests && npm run-script tests)
         - pkill -f SimpleHTTPServer
       cache:
         directories:
-          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
+          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules/
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -59,3 +55,4 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/.npm/
