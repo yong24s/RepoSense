@@ -5,26 +5,23 @@ matrix:
     - name: "Linux JDK 9"
       os: linux
       jdk: oraclejdk9
+      install:
+        - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
+        - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
 
     - name: "macOSX JDK 9"
       os: osx
+      install:
+        - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
+        - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
 
-    - name: "ESLint"
-      language: node_js
-      node_js: node
-      install:
-        - cd ./frontend && npm install --only=dev & cd ..
-      script:
-        - npm run lint frontend/src/**/*.js
-
     - name: "Frontend Tests"
-      language: generic
       os: linux
       dist: xenial
       addons:
