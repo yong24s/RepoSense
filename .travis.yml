@@ -5,10 +5,6 @@ matrix:
     - name: "Linux JDK 9"
       os: linux
       jdk: oraclejdk9
-      addons:
-        apt:
-          packages:
-            - oracle-java9-installer
       script:
         - ./config/travis/run-checks.sh
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
@@ -23,7 +19,7 @@ matrix:
       language: node_js
       node_js: node
       install:
-        - cd ./frontend; npm install --only=dev; cd ..'
+        - (cd ./frontend && npm install --only=dev)
       script:
         - npm run lint frontend/src/**/*.js
       cache:
@@ -42,7 +38,7 @@ matrix:
         - sysctl kernel.unprivileged_userns_clone=1
         - sleep 3
       install:
-        - cd ./frontend/tests; npm install; cd ../../
+        - (cd ./frontend/tests && npm install)
       script:
         - ./gradlew zipreport
         - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git"
