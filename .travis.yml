@@ -23,7 +23,8 @@ matrix:
       script:
         - npm run lint ./frontend/src/**/*.js
       cache:
-        directories:
+        - npm: true
+        - directories:
           - $TRAVIS_BUILD_DIR/frontend/node_modules/
 
     - name: "Frontend Tests"
@@ -45,7 +46,8 @@ matrix:
         - (cd ./frontend/tests && npm run-script tests)
         - pkill -f SimpleHTTPServer
       cache:
-        directories:
+        - npm: true
+        - directories:
           - $TRAVIS_BUILD_DIR/frontend/tests/node_modules/
 
 before_cache:
@@ -55,4 +57,3 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-    - $HOME/.npm/
