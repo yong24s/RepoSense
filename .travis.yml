@@ -23,7 +23,7 @@ matrix:
         - ./config/travis/run-checks.sh
         - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
-    - name: "Frontend tests"
+    - name: "Frontend Tests"
       os: linux
       dist: xenial
       addons:
@@ -40,7 +40,8 @@ matrix:
         - ./gradlew zipreport
         - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git"
         - cd reposense-report
-        - python -m SimpleHTTPServer 9000 &
+        - python -m SimpleHTTPServer 9000 > /dev/null 2>&1 & disown
+        - cd ..
         - sleep 3
         - cd ./frontend/tests && npm run-script tests
         - pkill -f python
