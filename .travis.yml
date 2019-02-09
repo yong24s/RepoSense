@@ -21,7 +21,7 @@ matrix:
       install:
         - cd ./frontend && npm install --only=dev & cd ..
       script:
-        - npm run lint ./frontend/src/**/*.js
+        - npm run lint frontend/src/**/*.js
 
     - name: "Frontend Tests"
       language: generic
