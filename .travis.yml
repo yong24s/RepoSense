@@ -1,4 +1,4 @@
-language: java
+  language: java
 
 matrix:
   include:
@@ -23,11 +23,13 @@ matrix:
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
     - os: linux
       dist: xenial
-      addons:
-        chrome: stable
       before_install:
+        - sysctl kernel.unprivileged_userns_clone=1
+        - export DISPLAY=:99.0
+        - sh -e /etc/init.d/xvfb start
         - cd ./frontend/tests; npm install; cd ../../
       script:
+        - ./gradlew run -Dargs="-repos https://github.com/yong24s/toolbox.git -view" > /dev/null 2>&1 & disown
         - cd ./frontend/tests && npm run-script tests
 
 before_cache:
@@ -38,3 +40,5 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
+    - $TRAVIS_BUILD_DIR/frontend/node_modules
