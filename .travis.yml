@@ -9,38 +9,25 @@ matrix:
         apt:
           packages:
             - oracle-java9-installer
-      install:
-        - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
-        - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
-      before_cache:
-        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-      cache:
-        directories:
-          - $HOME/.gradle/caches/
-          - $HOME/.gradle/wrapper/
-          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
-          - $TRAVIS_BUILD_DIR/frontend/node_modules
 
     - name: "macOSX JDK 9"
       os: osx
-      install:
-        - cd ./frontend; npm install --only=dev; cd ..
       script:
         - ./config/travis/run-checks.sh
-        - npm run lint frontend/src/**/*.js
         - time travis_retry ./gradlew clean checkstyleMain checkstyleTest test systemTest
-      before_cache:
-        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+    - name: "ESLint"
+      language: node_js
+      node_js: node
+      install:
+        - cd ./frontend; npm install --only=dev; cd ..'
+      script:
+        - npm run lint frontend/src/**/*.js
       cache:
         directories:
-          - $HOME/.gradle/caches/
-          - $HOME/.gradle/wrapper/
-          - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
           - $TRAVIS_BUILD_DIR/frontend/node_modules
 
     - name: "Frontend Tests"
@@ -65,12 +52,14 @@ matrix:
         - sleep 3
         - cd ./frontend/tests && npm run-script tests
         - pkill -f SimpleHTTPServer
-      before_cache:
-        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
       cache:
         directories:
-          - $HOME/.gradle/caches/
-          - $HOME/.gradle/wrapper/
           - $TRAVIS_BUILD_DIR/frontend/tests/node_modules
-          - $TRAVIS_BUILD_DIR/frontend/node_modules
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
