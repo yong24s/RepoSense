@@ -63,11 +63,14 @@ shadowJar {
     destinationDir = file("${buildDir}/jar/")
 }
 
-task zipReport(dependsOn: 'npmRunSpuild', type: Zip) {
+tasks.npmRunBuild.dependsOn('npmRunSpuild')
+
+task zipReport(dependsOn: 'npmRunBuild', type: Zip) {
     from 'frontend/build/'
     baseName = 'templateZip'
     destinationDir = file('src/main/resources')
 }
+
 tasks.shadowJar.dependsOn('zipReport');
 tasks.compileJava.dependsOn('zipReport');
 tasks.run.dependsOn('compileJava');
